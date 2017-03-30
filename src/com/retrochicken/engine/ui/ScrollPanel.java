@@ -6,17 +6,18 @@ import java.util.ArrayList;
 
 import com.retrochicken.engine.Input;
 import com.retrochicken.engine.Renderer;
+import com.retrochicken.engine.fx.Settings;
 
 public class ScrollPanel implements UIElement {
 	private ArrayList<UIElement> elements = new ArrayList<>();
 	
-	private int padding = 10;
+	private int padding = 2;
 	
 	private float maxWidth;
 	
 	private boolean scrollVisible = false;
 	private float origX;
-	private float x, y, width;
+	private float x, y;
 	private Rectangle bounds;
 	
 	private float scrollY;
@@ -28,7 +29,6 @@ public class ScrollPanel implements UIElement {
 	public ScrollPanel(float x, float y, float width, float height) {
 		this.x = origX = x;
 		this.y = scrollY = y;
-		this.width = width;
 		bounds = new Rectangle((int)x, (int)y, (int)width, (int)height);
 	}
 	
@@ -39,17 +39,23 @@ public class ScrollPanel implements UIElement {
 			element.setY(y);
 		if(element.getRight() - element.getLeft() > maxWidth) {
 			maxWidth = element.getRight() - element.getLeft();
-			this.x = origX - maxWidth/2.0f;
-			this.width = maxWidth;
+			//this.x = origX - maxWidth/2.0f;
+			//this.width = maxWidth;
 			bounds.x = (int)this.x - 2;
-			bounds.width = (int)this.width + 4;
+			//bounds.width = (int)this.width + 4;
 		}
 		element.setX(origX);
 		elements.add(element);
 		
 		if(!scrollVisible && elements.size() > 0 && elements.get(elements.size() - 1).getBottom() - elements.get(0).getTop() > bounds.height) {
 			scrollVisible = true;
+		}
+		if(scrollVisible) {
 			scrollHeight = bounds.height * bounds.height/(float)(elements.get(elements.size() - 1).getBottom() - elements.get(0).getTop());
+			scrollY = y + bounds.height - scrollHeight + 1;
+			float deltaY = y + bounds.height + element.getTop() - element.getBottom() - element.getY();
+			for(UIElement ele : elements)
+				ele.setY(ele.getY() + deltaY);
 		}
 	}
 	
@@ -91,14 +97,16 @@ public class ScrollPanel implements UIElement {
 		for(UIElement element : elements)
 			element.render(renderer, bounds);
 		if(scrollVisible) {
-			renderer.drawRect((int)(bounds.x + bounds.width + 5), (int)y, 10, bounds.height, 0xffff00ff);
-			renderer.drawRect((int)(bounds.x + bounds.width + 5), (int)scrollY, 10, (int)scrollHeight, 0xff4b0082);
-			renderer.drawRect((int)(bounds.x + bounds.width + 7), (int)scrollY + 3, 2, (int)scrollHeight - 5, 0xff6000a7);
+			renderer.drawRect((int)(bounds.x + bounds.width + 5), (int)y, 5, bounds.height, 0xffffffff);
+			renderer.drawRect((int)(bounds.x + bounds.width + 5), (int)scrollY, 5, (int)scrollHeight, Settings.TERMINAL_COLOR);
 		}
 	}
 	
 	public int getBottom() {
-		return bounds.y + bounds.height;
+		if(elements.size() > 0)
+			return elements.get(elements.size() - 1).getBottom();
+		else
+			return bounds.y;
 	}
 
 	@Override

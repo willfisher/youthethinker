@@ -15,8 +15,8 @@ public class Game extends AbstractGame {
 		GameContainer gc = new GameContainer();
 		gc.setClearScreen(true);
 		gc.setDynamicLights(true);
-		gc.setWidth(340);
-		gc.setHeight(220);
+		gc.setWidth((int)(340 * 1.5));
+		gc.setHeight((int)(220 * 1.25));
 		gc.setGame(new Game(gc));
 		gc.start();
 	}

@@ -13,12 +13,17 @@ public class PlainText implements UIElement {
 	private int color;
 	private float x, y;
 	
-	public PlainText(Font font, String text, int color, float x, float y) {
+	private String name;
+	private int nameColor;
+	
+	public PlainText(Font font, String name, int nameColor, String text, int color, float x, float y) {
 		this.font = font;
 		this.text = text;
 		this.color = color;
 		this.x = x;
 		this.y = y;
+		this.name = name;
+		this.nameColor = nameColor;
 	}
 	
 	@Override
@@ -53,16 +58,17 @@ public class PlainText implements UIElement {
 
 	@Override
 	public void render(Renderer renderer) {
-		renderer.drawString(text, color, (int)x, (int)y);
-	}
-
-	@Override
-	public int getLeft() {
-		return (int)(x + font.getWidth(text));
+		renderer.drawString(name, nameColor, (int)x, (int)y);
+		renderer.drawString(text, color, (int)(x + font.getWidth(name.toUpperCase())), (int)y);
 	}
 
 	@Override
 	public int getRight() {
+		return (int)(x + font.getWidth(text) + font.getWidth(name));
+	}
+
+	@Override
+	public int getLeft() {
 		return (int)x;
 	}
 
@@ -78,6 +84,7 @@ public class PlainText implements UIElement {
 
 	@Override
 	public void render(Renderer renderer, Rectangle bounds) {
-		renderer.drawString(text, color, (int)x, (int)y, bounds);
+		renderer.drawString(name, nameColor, (int)x, (int)y, bounds);
+		renderer.drawString(text, color, (int)(x + font.getWidth(name.toUpperCase())), (int)y, bounds);
 	}
 }

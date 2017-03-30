@@ -2,12 +2,12 @@ package com.retrochicken.engine.ui;
 
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 import com.retrochicken.engine.Input;
 import com.retrochicken.engine.Renderer;
 import com.retrochicken.engine.fx.Font;
+import com.retrochicken.engine.fx.Settings;
 
 public class TextField implements UIElement {
 	
@@ -24,7 +24,7 @@ public class TextField implements UIElement {
 	private float x, y;
 	private float yDiff;
 	
-	private boolean typing = false;
+	private boolean typing = true;
 	private int currentIndex = 1;
 	
 	private boolean cursorVisible = false;
@@ -74,18 +74,14 @@ public class TextField implements UIElement {
 
 	@Override
 	public void update() {
-		if(Input.isButtonPressed(MouseEvent.BUTTON1) && Input.mouseInBounds(box))
-			typing = true;
+		if(System.currentTimeMillis() - cursorStart >= 1000) {
+			cursorStart = System.currentTimeMillis();
+			cursorVisible = !cursorVisible;
+		}
 	}
 
 	@Override
 	public void update(Rectangle bounds) {
-		if(Input.isButtonPressed(MouseEvent.BUTTON1)) {
-			if(Input.mouseInBounds(box.intersection(bounds)))
-				typing = true;
-			else
-				typing = false;
-		}
 		if(System.currentTimeMillis() - cursorStart >= 1000) {
 			cursorStart = System.currentTimeMillis();
 			cursorVisible = !cursorVisible;
@@ -94,11 +90,14 @@ public class TextField implements UIElement {
 
 	@Override
 	public void render(Renderer renderer) {
-		renderer.drawString(name, 0xffffffff, (int)x, (int)(y - font.getHeight(name)/2.0f));
-		renderer.drawEmptyRect(box.x, box.y, box.width, box.height, 0x00000000);
+		renderer.drawString(name, Settings.TERMINAL_COLOR, (int)x, (int)(y - font.getHeight(name)/2.0f));
+		renderer.drawEmptyRect(box.x, box.y, box.width, box.height, 0xff000000);
 		renderer.drawString(text, 0xffffffff, box.x + 1, (int)(box.y + (box.height - font.getHeight(text))/2.0f), new Rectangle(box.x + 1, box.y + 1, box.width - 2, box.height - 2));
 		if(typing && cursorVisible) {
-			renderer.drawRect((int)(box.x + 1 + renderer.stringWidth(text.substring(0, currentIndex))), (int)(box.y + (box.height - font.getHeight(text))/2.0f) - 1, 1, (int)(font.getHeight(text) + 2), 0xffffffff);
+			if(text.length() > 0)
+				renderer.drawRect((int)(box.x + 1 + renderer.stringWidth(text.substring(0, currentIndex))), (int)(box.y + (box.height - font.getHeight(text))/2.0f) - 1, 1, (int)(font.getHeight(text) + 2), 0xffffffff);
+			else
+				renderer.drawRect((int)(box.x + 1), (int)(box.y + (box.height - font.getHeight(text))/2.0f) - 1, 1, (int)(font.getHeight(text) + 2), 0xffffffff);
 		}
 	}
 
@@ -137,20 +136,25 @@ public class TextField implements UIElement {
 	public void keyPressed(KeyEvent e) {
 		if(!typing)
 			return;
-		if(Character.isLetterOrDigit(e.getKeyChar()) || e.getKeyChar() == ' ') {
+		char c = e.getKeyChar();
+		if(!font.isDefined(e.getKeyChar()) && font.isDefined(("" + e.getKeyChar()).toUpperCase().charAt(0)))
+				c = ("" + c).toUpperCase().charAt(0);
+		if(font.isDefined(c)) {
 			if(text.length() > 0) {
-				text = text.substring(0, currentIndex) + e.getKeyChar() + (currentIndex < text.length() ? text.substring(currentIndex) : "");
+				text = text.substring(0, currentIndex) + c + (currentIndex < text.length() ? text.substring(currentIndex) : "");
 				currentIndex++;
 			}
 			else {
-				text = "" + e.getKeyChar();
+				text = "" + c;
 				currentIndex = text.length();
 			}
+			text = text.toUpperCase();
 			textChanged();
 		} else {
 			switch(e.getKeyCode()) {
 				case KeyEvent.VK_BACK_SPACE:
-					text = text.substring(0, currentIndex - 1) + (currentIndex < text.length() ? text.substring(currentIndex) : "");
+					if(currentIndex > 0)
+						text = text.substring(0, currentIndex - 1) + (currentIndex < text.length() ? text.substring(currentIndex) : "");
 					currentIndex--;
 					if(currentIndex < 1) currentIndex = 1;
 					break;

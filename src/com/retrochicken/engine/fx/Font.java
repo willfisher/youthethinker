@@ -37,4 +37,9 @@ public enum Font {
 			result += widths[string.codePointAt(i) - 32];
 		return result;
 	}
+	
+	public boolean isDefined(char c) {
+		int index = ("" + c).codePointAt(0) - 32;
+		return index >= 0 && index < widths.length;
+	}
 }

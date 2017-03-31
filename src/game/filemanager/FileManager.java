@@ -21,7 +21,7 @@ public class FileManager {
 	public Directory getCurrentDir() {
 		Directory result = mainDir;
 		for(int i = 0; i < indexRoute.size(); i++)
-			result = result.getSubFolders().get(i);
+			result = result.getSubFolders().get(indexRoute.get(i));
 		return result;
 	}
 	
@@ -29,7 +29,7 @@ public class FileManager {
 		String result = "/" + mainDir.getName().toUpperCase();
 		Directory currDir = mainDir;
 		for(int i = 0; i < indexRoute.size(); i++) {
-			currDir = currDir.getSubFolders().get(i);
+			currDir = currDir.getSubFolders().get(indexRoute.get(i));
 			result += "/" + currDir.getName().toUpperCase();
 		}
 		return result;

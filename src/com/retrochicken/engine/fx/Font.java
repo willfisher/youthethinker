@@ -33,8 +33,15 @@ public enum Font {
 	
 	public float getWidth(String string) {
 		float result = 0;
-		for(int i = 0; i < string.length(); i++)
-			result += widths[string.codePointAt(i) - 32];
+		for(int i = 0; i < string.length(); i++) {
+			char c = string.charAt(i);
+			if(isDefined(c))
+				result += widths[string.codePointAt(i) - 32];
+			else if(isDefined(("" + c).toUpperCase().charAt(0)))
+				result += widths[("" + c).toUpperCase().codePointAt(0) - 32];
+			else
+				result += widths["A".codePointAt(0) - 32];
+		}
 		return result;
 	}
 	

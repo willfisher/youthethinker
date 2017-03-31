@@ -21,6 +21,10 @@ public class TextField implements UIElement {
 	public String getName() {
 		return name;
 	}
+	public void setName(String name) {
+		this.name = name;
+		box.x = (int)(x + font.getWidth(name) + 5);
+	}
 	private float x, y;
 	private float yDiff;
 	

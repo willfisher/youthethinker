@@ -15,6 +15,8 @@ import com.retrochicken.engine.ui.TextField;
 
 import game.commands.Command;
 import game.commands.CommandManager;
+import game.filemanager.Directory;
+import game.filemanager.FileManager;
 
 public class Terminal implements Scene {
 	
@@ -32,6 +34,7 @@ public class Terminal implements Scene {
 	public static TextField input;
 	
 	private CommandManager manager = new CommandManager();
+	private FileManager fileManager;
 	
 	public Terminal(GameContainer gc) {
 		INPUT_MAX_Y = gc.getHeight() - 50 + 5;
@@ -41,9 +44,32 @@ public class Terminal implements Scene {
 		manager.addCommand(new Command("clear") {
 			public void call(String[] args) {
 				TERMINAL = new ScrollPanel(0, 0, gc.getWidth(), gc.getHeight() - 50);
-				resetInput();
 			}
 		});
+		manager.addCommand(new Command("cd") {
+			public void call(String[] args) {
+				if(args.length != 1) {
+					printOut("CD: Invalid arguments".toUpperCase());
+					return;
+				}
+				if(args[0].equals("..")) {
+					fileManager.goBack();
+					terminal_dir = "will@greatideas:" + fileManager.getPathName() + "$";
+					input.setName("will@greatideas:" + fileManager.getPathName() + "$");
+				} else {
+					fileManager.goForward(args[0].toUpperCase());
+					terminal_dir = "will@greatideas:" + fileManager.getPathName() + "$";
+					input.setName("will@greatideas:" + fileManager.getPathName() + "$");
+				}
+			}
+		});
+		
+		Directory mainDir = new Directory("home");
+		Directory will = new Directory("will");
+		Directory documents = new Directory("documents");
+		will.addDir(documents);
+		mainDir.addDir(will);
+		fileManager = new FileManager(mainDir);
 	}
 	
 	@Override
@@ -53,9 +79,9 @@ public class Terminal implements Scene {
 		if(Input.isKeyPressed(KeyEvent.VK_ENTER)) {
 			String command = input.getText();
 			TERMINAL.addElement(new PlainText(Font.STANDARD, terminal_dir, Settings.TERMINAL_COLOR, " " + command, 0xffffffff, 0, 0));
-			resetInput();
 			input.setText("");
 			manager.callCommand(command.toLowerCase());
+			resetInput();
 		}
 	}
 

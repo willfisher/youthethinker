@@ -63,6 +63,15 @@ public class Terminal implements Scene {
 				}
 			}
 		});
+		manager.addCommand(new Command("ls") {
+			public void call(String[] args) {
+				if(args.length > 0) {
+					printOut("LS: Invalid arguments".toUpperCase());
+					return;
+				}
+				fileManager.list();
+			}
+		});
 		
 		Directory mainDir = new Directory("home");
 		Directory will = new Directory("will");

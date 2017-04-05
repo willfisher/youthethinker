@@ -45,4 +45,19 @@ public class FileManager {
 		}
 		Terminal.printOut("CD: DIRECTORY " + newDir.toUpperCase() + " DOES NOT EXIST");
 	}
+	
+	public void list() {
+		String resultDir = "";
+		if(getCurrentDir().getSubFolders().size() > 0) {
+			for(Directory dir : getCurrentDir().getSubFolders())
+				resultDir += dir.getName() + " ";
+			Terminal.printOut(resultDir);
+		}
+		String resultFile = "";
+		if(getCurrentDir().getFiles().size() > 0) {
+			for(TFile file : getCurrentDir().getFiles())
+				resultFile += file.getName() + " ";
+			Terminal.printOut(resultFile);
+		}
+	}
 }

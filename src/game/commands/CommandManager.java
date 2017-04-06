@@ -2,7 +2,6 @@ package game.commands;
 
 import java.util.ArrayList;
 
-import game.scenes.Terminal;
 
 public class CommandManager {
 	
@@ -12,7 +11,7 @@ public class CommandManager {
 		commands.add(command);
 	}
 	
-	public void callCommand(String input) {
+	public boolean callCommand(String input) {
 		String[] data = input.split(" ");
 		String[] args = new String[data.length - 1];
 		boolean called = false;
@@ -25,7 +24,6 @@ public class CommandManager {
 				called = true;
 			}
 		
-		if(data[0].length() > 0 && !called)
-			Terminal.printOut("BASH: UNRECOGNIZED COMMAND");
+		return called;
 	}
 }

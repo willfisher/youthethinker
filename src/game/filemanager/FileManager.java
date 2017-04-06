@@ -36,14 +36,30 @@ public class FileManager {
 	}
 	
 	public void goForward(String newDir) {
-		ArrayList<Directory> dir = getCurrentDir().getSubFolders();
-		for(int i = 0; i < dir.size(); i++) {
-			if(dir.get(i).getName().equals(newDir)) {
-				indexRoute.add(i);
-				return;
+		String[] moves = newDir.split("/");
+		boolean worked = true;
+		int count = 0;
+		for(String move : moves) {
+			boolean found = false;
+			ArrayList<Directory> dir = getCurrentDir().getSubFolders();
+			for(int i = 0; i < dir.size(); i++) {
+				if(dir.get(i).getName().equals(move)) {
+					indexRoute.add(i);
+					found = true;
+					count++;
+					break;
+				}
+			}
+			if(!found) {
+				worked = false;
+				break;
 			}
 		}
-		Terminal.printOut("CD: DIRECTORY " + newDir.toUpperCase() + " DOES NOT EXIST");
+		if(!worked) {
+			for(int i = 0; i < count; i++)
+				indexRoute.remove(indexRoute.size() - 1);
+			Terminal.printOut("CD: DIRECTORY " + newDir.toUpperCase() + " DOES NOT EXIST");
+		}
 	}
 	
 	public void list() {
@@ -59,5 +75,15 @@ public class FileManager {
 				resultFile += file.getName() + " ";
 			Terminal.printOut(resultFile);
 		}
+	}
+	
+	public boolean callCommand(String command) {
+		for(TFile file : getCurrentDir().getFiles()) {
+			if(file.getActiveCommand().equals(command)) {
+				file.call();
+				return true;
+			}
+		}
+		return false;
 	}
 }

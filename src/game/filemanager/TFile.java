@@ -10,8 +10,10 @@ public class TFile {
 	private String activeCommand;
 	
 	public TFile(String name, String[] contents, String activeCommand) {
-		this.name = name;
+		this.name = name.toUpperCase();
 		this.contents = contents;
+		for(int i = 0; i < this.contents.length; i++)
+			this.contents[i] = this.contents[i].toUpperCase();
 		this.activeCommand = activeCommand.toUpperCase();
 	}
 	

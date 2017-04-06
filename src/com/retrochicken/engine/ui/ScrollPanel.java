@@ -41,7 +41,7 @@ public class ScrollPanel implements UIElement {
 			maxWidth = element.getRight() - element.getLeft();
 			//this.x = origX - maxWidth/2.0f;
 			//this.width = maxWidth;
-			bounds.x = (int)this.x - 2;
+			//bounds.x = (int)this.x - 2;
 			//bounds.width = (int)this.width + 4;
 		}
 		element.setX(origX);
